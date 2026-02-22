@@ -2,44 +2,43 @@ import streamlit as st
 import pandas as pd
 import joblib
 
+# Load trained model
 model = joblib.load("dt_model (1).pkl")
+model_columns = joblib.load("model_columns.pkl")
 
-st.title("EV Blast Prediction")
+st.title("EV Battery Health Prediction")
 
-options = ["Yes", "No"]
+# Numeric Inputs
+Temperature = st.number_input("Temperature")
+Poor_Cell_Design = st.number_input("Poor Cell Design (0 or 1)")
+Poor_Battery_Design = st.number_input("Poor Battery Design (0 or 1)")
+Short_Circuits = st.number_input("Short Circuits (0 or 1)")
 
-Battery_Type = st.selectbox("Battery_Type", options)
-Poor_Cell_Design = st.selectbox("Poor_Cell_Design", options)
-External_Abuse = st.selectbox("External_Abuse", options)
-Poor_Battery_Design = st.selectbox("Poor_Battery_Design", options)
-Short_Circuits = st.selectbox("Short_Circuits", options)
-Temperature = st.selectbox("Temperature", options)
-Overcharge_Overdischarge = st.selectbox("Overcharge_Overdischarge", options)
-Battery_Maintenance = st.selectbox("Battery_Maintenance", options)
-Battery_Health = st.selectbox("Battery_Health", options)
+# Categorical Inputs
+Battery_Type = st.selectbox("Battery Type", ["Li-ion", "NiMH", "Lead Acid"])
+External_Abuse = st.selectbox("External Abuse", ["Yes", "No"])
+Overcharge_Overdischarge = st.selectbox("Overcharge/Overdischarge", ["Yes", "No"])
+Battery_Maintenance = st.selectbox("Battery Maintenance", ["Good", "Poor"])
 
-# Convert Yes/No to 1/0
-mapping = {"Yes": 1, "No": 0}
-
+# Create dataframe
 input_data = pd.DataFrame({
-    "Battery_Type": [mapping[Battery_Type]],
-    "Poor_Cell_Design": [mapping[Poor_Cell_Design]],
-    "External_Abuse": [mapping[External_Abuse]],
-    "Poor_Battery_Design": [mapping[Poor_Battery_Design]],
-    "Short_Circuits": [mapping[Short_Circuits]],
-    "Temperature": [mapping[Temperature]],
-    "Overcharge_Overdischarge": [mapping[Overcharge_Overdischarge]],
-    "Battery_Maintenance": [mapping[Battery_Maintenance]],
-    "Battery_Health": [mapping[Battery_Health]]
+    "Temperature": [Temperature],
+    "Poor_Cell_Design": [Poor_Cell_Design
+    "Poor_Battery_Design": [Poor_Battery_Design],
+    "Short_Circuits": [Short_Circuits],
+    "Battery_Type": [Battery_Type],
+    "External_Abuse": [External_Abuse],
+    "Overcharge_Overdischarge": [Overcharge_Overdischarge],
+    "Battery_Maintenance": [Battery_Maintenance]
 })
 
-# Ensure correct column order
-input_data = input_data[model.feature_names_in_]
+# Convert categorical to dummies
+input_data = pd.get_dummies(input_data)
 
+# Ensure same columns as training
+input_data = input_data.reindex(columns=model_columns, fill_value=0)
+
+# Prediction
 if st.button("Predict"):
-    prediction = model.predict(input_data)[0]
-
-    if prediction == 1:
-        st.error("⚠️ High Risk: Blast")
-    else:
-        st.success("✅ Moderate Condition")
+    prediction = model.predict(input_data)
+    st.success(f"Predicted Battery Health: {prediction[0]}")

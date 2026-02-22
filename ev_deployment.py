@@ -31,8 +31,10 @@ input_data = pd.DataFrame({
     "Battery_Maintenance": [Battery_Maintenance]
 })
 
-# Convert categorical like training
 input_data = pd.get_dummies(input_data)
+
+# Add missing columns
+input_data = input_data.reindex(columns=model_columns, fill_value=0)
 
 if st.button("Predict"):
     prediction = model.predict(input_data)

@@ -36,7 +36,11 @@ input_data = pd.get_dummies(input_data)
 # Add missing columns
 input_data = input_data.reindex(columns=model_columns, fill_value=0)
 
-if st.button("Predict"):
-    prediction = model.predict(input_data)
-    result = le.inverse_transform(prediction)
-    st.success(f"Predicted Battery Health: {result[0]}")
+prediction = model.predict(input_data)
+
+prediction = prediction.reshape(-1)   # ensure correct shape
+prediction = prediction.astype(int)   # ensure integer
+
+result = le.inverse_transform(prediction)
+
+st.success(f"Predicted Battery Health: {result[0]}")

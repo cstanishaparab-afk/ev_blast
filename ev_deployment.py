@@ -40,7 +40,4 @@ prediction = model.predict(input_data)
 
 prediction = model.predict(input_data)
 
-st.success(f"Predicted Battery Health: {prediction[0]}")
-
-
-st.success(f"Predicted Battery Health: {result[0]}")
+st.success(f"Predicted Battery Health: {prediction[0]})"

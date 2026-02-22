@@ -4,8 +4,8 @@ import pandas as pd
 import joblib
 
 # Load model and encoder
-model = joblib.load("dt_model(1).pkl")
-le = joblib.load("label_encoder(1).pkl")
+model = joblib.load("dt_model (1).pkl")
+le = joblib.load("label_encoder (1).pkl")
 
 st.title("EV Battery Health Prediction")
 
